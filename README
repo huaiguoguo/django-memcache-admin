@@ -1,9 +1,9 @@
-This app is aim to sovle the problem that django can not expire some key manaully.
-I will be add some other function related with memcache in django later.
+This app is aim to sovle the problem that django can not expire key manaully.
+I will add some other functions related with memcache in django later.
 
-step1: copy the app from this project ;
+step1: copy the app from this project to you own ;
 
-step2: add the memcache machine`ip in the settings.py in you project.
+step2: add the memcache machine`s ip in the settings.py in you project.
 
 ok, point to /cache_admin/ ,you will see the key and length of each item,
 
