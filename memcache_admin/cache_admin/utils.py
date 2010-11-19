@@ -11,21 +11,17 @@ class mcstats(object):
     def __del__(self):
         self.s.close()
         
-    def connect(self, command):
-        
-        num = self.s.send(command)
-        
+    def connect(self, command):        
+        num = self.s.send(command)        
         totalData = ''
         while True:
             data = self.s.recv(1024)
-            #print data
             if len(data) <= 0:
                 break
             
             totalData = totalData + data
             if totalData.find('END') >= 0:
                 break
-        #print totalData    
         return totalData
         
     def calcSlabsCount(self, data):
@@ -43,7 +39,7 @@ class mcstats(object):
         else:
             return 0
         
-    def showKVpairs(self, slabCounts, command):
+    def showKVpairs(self, slabCounts, command="stats cachedump "):
         for a in range(0, slabCounts):
             tmpc = command + str(a + 1) + ' 0 \r\n'
             data = self.connect(tmpc)
@@ -51,7 +47,7 @@ class mcstats(object):
             for b in f:
                 if b.find('ITEM') >= 0:
                     arr = b.split(' ')
-                    yield 'key : ' + arr[1] + ' ------ value size : ' + arr[2][1:len(arr[2])]        
+                    yield arr[1] , arr[2][1:len(arr[2])]        
             f.close()
             
 if __name__ == "__main__":
