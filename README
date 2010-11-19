@@ -1,4 +1,5 @@
-This app is aim to sovle the problem that django can not expire some key manaully.I will be add some other function related with memcache in django later.
+This app is aim to sovle the problem that django can not expire some key manaully.
+I will be add some other function related with memcache in django later.
 
 step1: copy the app from this project ;
 
