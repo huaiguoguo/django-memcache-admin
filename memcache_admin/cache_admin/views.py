@@ -13,8 +13,9 @@ from utils import get_memcached_stats
 _, hosts, _ = parse_backend_uri(settings.CACHE_BACKEND)
 SERVERS = hosts.split(';')
 
-def index(request):
-    mcs = mcstats("localhost", 11211)
+def index(request,pk):
+    server,port = SERVERS[int(pk)].split(":")
+    mcs = mcstats(server, int(port))
     slabCounts = mcs.calcSlabsCount(mcs.connect('stats items \r\n'))
     key_items = set(mcs.showKVpairs(slabCounts))
     key_items = [one for one in key_items if int(one[1])>20 ]
