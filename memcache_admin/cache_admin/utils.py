@@ -1,4 +1,12 @@
-import socket, StringIO
+import socket, StringIO 
+import datetime
+
+try:
+    import memcache
+    memcache_installed = True
+except ImportError:
+    memcache_installed = False
+
 class mcstats(object):
     
     def __init__(self, address, port):
@@ -49,11 +57,35 @@ class mcstats(object):
                     arr = b.split(' ')
                     yield arr[1] , arr[2][1:len(arr[2])]        
             f.close()
-            
-if __name__ == "__main__":
-    mcs = mcstats("localhost", 11211)
-    print mcs.connect('stats items \r\n')
-    print "___________________________________"
-    print mcs.calcSlabsCount(mcs.connect('stats items \r\n'))
-    print "___________________________________"
-    mcs.showKVpairs(mcs.calcSlabsCount(mcs.connect('stats items \r\n')), 'stats cachedump ')
+
+
+def get_memcached_stats(server):
+    if not memcache_installed:
+        return {}
+    host = memcache._Host(server)
+    host.connect()
+    host.send_cmd("stats")    
+    stats = {}    
+    while True:
+        try:
+            stat, key, value = host.readline().split(None, 2)
+        except ValueError:
+            break
+        try:
+            # Convert to native type, if possible
+            value = int(value)
+            if key == "uptime":
+                value = datetime.timedelta(seconds=value)
+            elif key == "time":
+                value = datetime.datetime.fromtimestamp(value)
+        except ValueError:
+            pass
+        stats[key] = value
+
+    host.close_socket()    
+    try:
+        stats['hit_rate'] = 100 * stats['get_hits'] / stats['cmd_get']
+    except ZeroDivisionError:
+        stats['hit_rate'] = stats['get_hits']
+    
+    return stats

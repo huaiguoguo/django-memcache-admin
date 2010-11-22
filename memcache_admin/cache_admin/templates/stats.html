@@ -1,0 +1,35 @@
+{% extends 'admin/base_site.html' %}
+
+{% block content %}
+<h1>Memcached Server Stats</h1>
+       <table>
+           <thead>
+               <tr>
+                   <th>Server</th>
+                   <th>Keys</th>
+                   <th>Hits</th>
+                   <th>Gets</th>
+                   <th>Hit Rate</th>
+                   <th>Traffic In</th>
+                   <th>Traffic Out</th>
+                   <th>Usage</th>
+                   <th>Uptime</th>
+               </tr>
+           </thead>
+           <tbody>
+               {% for i,server,stats in statuses %}
+                   <tr class="{% cycle even,odd %}">
+                       <td><a href="">{{ server }}</a></td>
+                       <td>{{ stats.curr_items }}</td>
+                       <td>{{ stats.get_hits }}</td>
+                       <td>{{ stats.cmd_get }}</td>
+                       <td>{{ stats.hit_rate }}%</td>
+                       <td>{{ stats.bytes_read|filesizeformat }}</td>
+                       <td>{{ stats.bytes_written|filesizeformat }}</td>
+                       <td>{{ stats.bytes|filesizeformat }}</td>
+                       <td>{{ stats.uptime }}</td>
+                   </tr>
+               {% endfor %}
+           </tbody>
+       </table>
+{% endblock content %}
