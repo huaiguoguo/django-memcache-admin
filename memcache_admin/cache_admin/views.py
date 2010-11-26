@@ -18,8 +18,8 @@ def index(request,pk):
     mcs = mcstats(server, int(port))
     slabCounts = mcs.calcSlabsCount(mcs.connect('stats items \r\n'))
     key_items = set(mcs.showKVpairs(slabCounts))
-    key_items = [one for one in key_items if int(one[1])>20 ]
-    return render_to_response('index.html', RequestContext(request, locals())) 
+    key_items = [one for one in key_items if int(one[1])>2 ]
+    return render_to_response('cache_admin/index.html', RequestContext(request, locals())) 
 
 
 def delete_key(request):
@@ -37,7 +37,7 @@ def server_list(request):
         'statuses': statuses,
     }
     return render_to_response(
-        'stats.html',
+        'cache_admin/stats.html',
         context,
         context_instance=RequestContext(request)
     )
