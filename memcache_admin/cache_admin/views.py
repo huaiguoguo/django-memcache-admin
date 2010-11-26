@@ -15,21 +15,25 @@ SERVERS = hosts.split(';')
 
 def index(request,pk):
     server,port = SERVERS[int(pk)].split(":")
-    mcs = mcstats(server, int(port))
-    slabCounts = mcs.calcSlabsCount(mcs.connect('stats items \r\n'))
-    key_items = set(mcs.showKVpairs(slabCounts))
-    key_items = [one for one in key_items if int(one[1])>2 ]
-    return render_to_response('cache_admin/index.html', RequestContext(request, locals())) 
+    key_items = get_keys(server,port)
+    return render_to_response('cache_admin/index.html', RequestContext(request, locals()))
 
 
 def delete_key(request):
     key = request.POST.get("key")
-    cache.delete(key)    
+    cache.delete(key)
     return HttpResponse("Y")
 
 def flush_all(request):
     cache.clear()
-    return HttpResponse(reverse("cache_index"))
+    for i in SERVERS:
+        server,port = i.split(":")
+        keys = get_keys(server, port)
+        for key in keys:
+            print key
+            cache.has_key(key[0])
+
+    return HttpResponseRedirect(reverse("cache_index"))
 
 def server_list(request):
     statuses = zip(range(len(SERVERS)), SERVERS, map(get_memcached_stats, SERVERS))
@@ -42,7 +46,12 @@ def server_list(request):
         context_instance=RequestContext(request)
     )
 
-
+def get_keys(server,port):
+    mcs = mcstats(server, int(port))
+    slabCounts = mcs.calcSlabsCount(mcs.connect('stats items \r\n'))
+    key_items = set(mcs.showKVpairs(slabCounts))
+    key_items = [one for one in key_items if int(one[1])>2 ]
+    return key_items
 
 #def delete_many(request):
-#    key = 
+#    key =

@@ -14,12 +14,14 @@
                    <th>Traffic Out</th>
                    <th>Usage</th>
                    <th>Uptime</th>
+                <th><a href="{% url flush_all %}">flushAll</a></th>
+
                </tr>
            </thead>
            <tbody>
                {% for i,server,stats in statuses %}
                    <tr class="{% cycle even,odd %}">
-                       <td><a href="{% url key_index forloop.counter0 %}">{{ server }}</a></td>
+                       <td><a href="{% url server_index forloop.counter0 %}">{{ server }}</a></td>
                        <td>{{ stats.curr_items }}</td>
                        <td>{{ stats.get_hits }}</td>
                        <td>{{ stats.cmd_get }}</td>
