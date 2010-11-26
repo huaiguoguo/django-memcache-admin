@@ -1,5 +1,7 @@
 import socket, StringIO 
 import datetime
+from django.core.cache import cache
+
 
 try:
     import memcache
@@ -89,3 +91,46 @@ def get_memcached_stats(server):
         stats['hit_rate'] = stats['get_hits']
     
     return stats
+
+###############################################################################
+##the function below is not for this app but useful for the use of memcache
+###############################################################################
+def cache_set(key, value):
+    cache.set(key, value)
+    return value
+
+
+def cached_key_method(func):
+    """
+    this function is used to define the key using the argument inputed
+    this define two,you can define all or some  of the argument as you wish
+    sample like this :
+        
+    @cached_key_method
+    def get_result(arg1,arg2):
+        //your logic here    
+        return result     
+    """
+    def cached_func(*args, **kwargs): 
+        key = 'game::list::%s::%s'%(args[0],args[1])
+        return cache.get(key) or cache_set(key, func(*args, **kwargs))
+
+    return cached_func
+
+def cached(key_input):
+    """
+    this fuction  recieve an argument, which is to be the key in memcache
+    sample like this:
+        
+    @cached("key")
+    def get_result():
+        //your logic here
+        return result
+       
+    """
+    def _cached(func):
+        def wrapper(*args, **kwargs):
+            key = key_input
+            return cache.get(key) or cache_set(key, func(*args, **kwargs))            
+        return wrapper
+    return _cached
